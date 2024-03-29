@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "snapshot": "ts-node script.ts",
     "pm2": "pm2 start ts-node --name script -c '0 */6 * * *' --no-autorestart -- script.ts",
     "prod": "NODE_ENV=prod pm2 start src/main.js --name base"
   },

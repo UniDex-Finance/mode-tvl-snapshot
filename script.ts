@@ -67,7 +67,7 @@ async function fetchActualDeposits() {
 
   // Create CSV data
   const csvData = [
-    ["User", "Pool Address", "Block Number", "Timestamp", "Staked Amount"],
+    ["User", "Pool", "Block", "Timestamp", "Staked"],
   ];
 
   for (const user in userStakes) {
