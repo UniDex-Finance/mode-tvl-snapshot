@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ethers } from "ethers";
+import fs from "fs";
 require("dotenv").config();
 
 const GRAPHQL_API_URL = process.env.GRAPHQL_API_URL!;
@@ -47,7 +48,6 @@ async function fetchUniqueDepositors(): Promise<string[]> {
 async function fetchActualDeposits() {
   const uniqueDepositors = await fetchUniqueDepositors();
   let totalStaked = ethers.BigNumber.from(0);
-
   const userStakes: {
     [user: string]: { stake: ethers.BigNumber; rewardShare: string };
   } = {};
@@ -65,14 +65,31 @@ async function fetchActualDeposits() {
   const currentBlockNumber = await provider.getBlockNumber();
   const currentTimestamp = Date.now();
 
-  // Print user staked
+  // Create CSV data
+  const csvData = [
+    ["User", "Pool Address", "Block Number", "Timestamp", "Staked Amount"],
+  ];
+
   for (const user in userStakes) {
     if (userStakes[user].stake.isZero()) {
       continue; // Skip to the next iteration if the stake is zero
     }
-    console.log(`${user}, ${POOL_ADDRESS}, ${currentBlockNumber}, ${currentTimestamp}, ${ethers.utils.formatUnits(userStakes[user].stake, 18)}`);
+    csvData.push([
+      user,
+      POOL_ADDRESS,
+      currentBlockNumber.toString(),
+      currentTimestamp.toString(),
+      ethers.utils.formatUnits(userStakes[user].stake, 18),
+    ]);
   }
 
+  // Convert CSV data to string
+  const csvString = csvData.map((row) => row.join(","  )).join("\n");
+
+  // Write CSV data to file
+  fs.writeFileSync("outputData.csv", csvString);
+
+  console.log("CSV file generated successfully.");
 }
 
 fetchActualDeposits();
